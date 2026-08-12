@@ -1,0 +1,687 @@
+/* ==========================================================================
+   小鹿园 · HEESEUNG — 全局样式
+   视觉语言：Luxury / Minimal / Dark / Cinematic
+   色板（严格三色）：#050608 / #FFFFFF / #BFC8D6
+   ========================================================================== */
+
+:root {
+  --color-void: #050608;
+  --color-snow: #ffffff;
+  --color-mist: #bfc8d6;
+
+  --font-latin: 'Cinzel', 'Times New Roman', serif;
+  --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-han: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+
+  --grain-opacity: 0.04;
+}
+
+/* ---------------- Reset ---------------- */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-void);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(191, 200, 214, 0.25) transparent;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-mist);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(191, 200, 214, 0.22);
+  color: var(--color-snow);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(191, 200, 214, 0.22);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* ---------------- 启动黑屏（能力检测期间） ---------------- */
+
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--color-void);
+  z-index: 1000;
+}
+
+/* ---------------- 应用骨架 ---------------- */
+
+.app {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* WebGL 星空固定背景 */
+.universe {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---------------- 全局电影质感层（始终存在） ---------------- */
+
+/* 胶片颗粒：SVG feTurbulence 噪声，steps 抖动模拟胶片流动 */
+.grain-overlay {
+  position: fixed;
+  inset: -60%;
+  z-index: 200;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='0.6'/></svg>");
+  animation: grain-shift 0.9s steps(6) infinite;
+}
+
+@keyframes grain-shift {
+  0% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-4%, 3%);
+  }
+  40% {
+    transform: translate(3%, -5%);
+  }
+  60% {
+    transform: translate(-2%, 4%);
+  }
+  80% {
+    transform: translate(4%, 2%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* 暗角：极克制的电影 vignette */
+.vignette-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 52%,
+    rgba(5, 6, 8, 0.5) 100%
+  );
+}
+
+/* ---------------- CSS 星空降级（无 WebGL2） ---------------- */
+
+.stars-fallback {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.stars-fallback-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  animation: fallback-twinkle 4.5s ease-in-out infinite;
+}
+
+.stars-fallback-layer--1 {
+  animation-duration: 5.5s;
+}
+.stars-fallback-layer--2 {
+  animation-duration: 4s;
+}
+.stars-fallback-layer--3 {
+  animation-duration: 3s;
+}
+
+@keyframes fallback-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Intro —— 开场动画 DOM 层
+   ========================================================================== */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* ---- 第四幕：银白光束 ---- */
+
+.intro-beam {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 38vw;
+  height: 16vh;
+  transform: translateY(-50%);
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.055) 32%,
+    rgba(255, 255, 255, 0.42) 50%,
+    rgba(255, 255, 255, 0.055) 68%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* 光束中心的细亮线 */
+.intro-beam::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 6%;
+  right: 6%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.9),
+    transparent
+  );
+  box-shadow: 0 0 26px rgba(191, 200, 214, 0.65), 0 0 70px rgba(191, 200, 214, 0.3);
+}
+
+/* ---- Finale：中心镜头眩光 ---- */
+
+.intro-flare {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 64vmin;
+  height: 64vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(191, 200, 214, 0.08) 34%,
+    transparent 62%
+  );
+}
+
+/* ---- Logo ---- */
+
+.intro-logo-wrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  opacity: 0;
+  /* 光束扫描显现：--beam 由 GSAP onUpdate 写入 */
+  --beam: 0%;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    transparent calc(var(--beam) - 7%),
+    #000 var(--beam),
+    transparent calc(var(--beam) + 2.5%),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    transparent calc(var(--beam) - 7%),
+    #000 var(--beam),
+    transparent calc(var(--beam) + 2.5%),
+    transparent 100%
+  );
+}
+
+.intro-logo--latin {
+  font-family: var(--font-latin);
+  font-weight: 900;
+  font-size: clamp(44px, 10.5vw, 148px);
+  line-height: 1.04;
+  letter-spacing: 0.32em;
+  margin-right: -0.32em; /* 补偿最后一个字符的字距，保持视觉居中 */
+  color: var(--color-snow);
+  /* 轻微 Bloom —— 克制，不发光过度 */
+  text-shadow:
+    0 0 16px rgba(255, 255, 255, 0.16),
+    0 0 64px rgba(191, 200, 214, 0.12);
+}
+
+.intro-logo--han {
+  font-family: var(--font-han);
+  font-weight: 900;
+  font-size: clamp(20px, 3.4vw, 40px);
+  letter-spacing: 0.85em;
+  margin-right: -0.85em;
+  margin-top: clamp(10px, 1.6vh, 18px);
+  color: var(--color-mist);
+  text-shadow: 0 0 22px rgba(191, 200, 214, 0.18);
+}
+
+/* ---- Tagline ---- */
+
+.intro-tagline {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + clamp(72px, 11vw, 150px));
+  transform: translateX(-50%);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(14px, 1.7vw, 21px);
+  letter-spacing: 0.1em;
+  color: var(--color-mist);
+  opacity: 0;
+  white-space: nowrap;
+}
+
+/* ---- ENTER ---- */
+
+.intro-enter {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(56px, 9vh, 96px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.intro-enter-text {
+  font-family: var(--font-latin);
+  font-weight: 500;
+  font-size: clamp(13px, 1.4vw, 17px);
+  letter-spacing: 0.46em;
+  margin-right: -0.46em;
+  color: var(--color-mist);
+  transition:
+    color 0.5s var(--ease-out-quart),
+    text-shadow 0.5s var(--ease-out-quart),
+    letter-spacing 0.5s var(--ease-out-quart);
+}
+
+/* Hover：文字变亮 + 细线展开 */
+.intro-enter:hover .intro-enter-text,
+.intro-enter:focus-visible .intro-enter-text {
+  color: var(--color-snow);
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.32);
+  letter-spacing: 0.52em;
+  margin-right: -0.52em;
+}
+
+.intro-enter-line {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.72),
+    transparent
+  );
+  transform: scaleX(0);
+  transition: transform 0.65s var(--ease-out-expo);
+}
+
+.intro-enter:hover .intro-enter-line,
+.intro-enter:focus-visible .intro-enter-line {
+  transform: scaleX(1);
+}
+
+/* ---- SKIP ---- */
+
+.intro-skip {
+  position: absolute;
+  top: clamp(20px, 3.4vh, 34px);
+  right: clamp(20px, 3.4vw, 40px);
+  font-family: var(--font-latin);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  color: rgba(191, 200, 214, 0.55);
+  opacity: 0;
+  pointer-events: auto;
+  padding: 10px 4px;
+  transition: color 0.4s ease;
+}
+
+.intro-skip:hover {
+  color: var(--color-snow);
+}
+
+/* ==========================================================================
+   Home —— 主页
+   ========================================================================== */
+
+.home {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* ---- Hero ---- */
+
+.home-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  will-change: opacity, transform;
+}
+
+.home-hero-kicker {
+  font-family: var(--font-latin);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.55em;
+  color: rgba(191, 200, 214, 0.55);
+  margin-bottom: clamp(24px, 4vh, 40px);
+}
+
+.home-hero-title {
+  font-family: var(--font-latin);
+  font-weight: 900;
+  font-size: clamp(56px, 12vw, 168px);
+  line-height: 1;
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
+  color: var(--color-snow);
+  text-shadow:
+    0 0 24px rgba(255, 255, 255, 0.14),
+    0 0 90px rgba(191, 200, 214, 0.1);
+}
+
+.home-hero-han {
+  font-family: var(--font-han);
+  font-weight: 900;
+  font-size: clamp(22px, 3.6vw, 44px);
+  letter-spacing: 0.8em;
+  margin-right: -0.8em;
+  margin-top: clamp(14px, 2.4vh, 26px);
+  color: var(--color-mist);
+}
+
+.home-hero-tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(15px, 1.8vw, 22px);
+  letter-spacing: 0.08em;
+  color: var(--color-mist);
+  margin-top: clamp(28px, 5vh, 52px);
+  opacity: 0.85;
+}
+
+.home-hero-scroll {
+  position: absolute;
+  bottom: clamp(28px, 5vh, 52px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-latin);
+  font-size: 9px;
+  letter-spacing: 0.5em;
+  color: rgba(191, 200, 214, 0.4);
+  animation: scroll-pulse 3.2s ease-in-out infinite;
+}
+
+.home-hero-scroll::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 34px;
+  margin: 12px auto 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(191, 200, 214, 0.5),
+    transparent
+  );
+  animation: scroll-line 2.4s var(--ease-out-expo) infinite;
+}
+
+@keyframes scroll-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes scroll-line {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  55% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  56% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+/* ---- 章节 ---- */
+
+.home-section {
+  position: relative;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(96px, 18vh, 200px) clamp(28px, 8vw, 80px);
+  border-top: 1px solid rgba(191, 200, 214, 0.1);
+}
+
+.home-section-index {
+  font-family: var(--font-latin);
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: rgba(191, 200, 214, 0.35);
+  margin-bottom: clamp(20px, 3.4vh, 32px);
+}
+
+.home-section-title {
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-size: clamp(24px, 3.6vw, 44px);
+  letter-spacing: 0.34em;
+  margin-right: -0.34em;
+  color: var(--color-snow);
+  margin-bottom: clamp(24px, 4vh, 44px);
+}
+
+.home-section-body {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(16px, 1.9vw, 22px);
+  line-height: 2.05;
+  letter-spacing: 0.04em;
+  color: var(--color-mist);
+  max-width: 640px;
+}
+
+.home-section--quote .home-quote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(26px, 4.4vw, 52px);
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: var(--color-snow);
+  margin-bottom: clamp(28px, 5vh, 48px);
+}
+
+/* ---- 光年网格 ---- */
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(24px, 4vw, 64px);
+  margin-top: clamp(32px, 6vh, 56px);
+}
+
+.home-grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(191, 200, 214, 0.16);
+}
+
+.home-grid-num {
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-size: clamp(30px, 4.6vw, 56px);
+  color: var(--color-snow);
+}
+
+.home-grid-label {
+  font-family: var(--font-latin);
+  font-size: 9px;
+  letter-spacing: 0.42em;
+  color: rgba(191, 200, 214, 0.45);
+}
+
+/* ---- Footer ---- */
+
+.home-footer {
+  padding: clamp(96px, 16vh, 180px) 24px clamp(56px, 9vh, 96px);
+  text-align: center;
+  border-top: 1px solid rgba(191, 200, 214, 0.1);
+}
+
+.home-footer-title {
+  font-family: var(--font-han);
+  font-weight: 900;
+  font-size: clamp(22px, 3.2vw, 34px);
+  letter-spacing: 0.7em;
+  margin-right: -0.7em;
+  color: var(--color-snow);
+}
+
+.home-footer-sub {
+  font-family: var(--font-latin);
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: rgba(191, 200, 214, 0.5);
+  margin-top: 20px;
+}
+
+.home-footer-note {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: rgba(191, 200, 214, 0.35);
+  margin-top: 34px;
+}
+
+/* ==========================================================================
+   响应式 —— 移动端保持完整效果
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --grain-opacity: 0.03;
+  }
+
+  .intro-logo--latin {
+    letter-spacing: 0.22em;
+    margin-right: -0.22em;
+  }
+
+  .intro-logo--han {
+    letter-spacing: 0.6em;
+    margin-right: -0.6em;
+  }
+
+  .home-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .home-section-body {
+    line-height: 1.9;
+  }
+}
+
+/* 触屏设备：无 hover，ENTER 细线常驻轻微提示 */
+@media (hover: none) {
+  .intro-enter-line {
+    transform: scaleX(0.4);
+    opacity: 0.7;
+  }
+}
+
+/* ==========================================================================
+   无障碍：减少动态效果偏好
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .grain-overlay,
+  .stars-fallback-layer,
+  .home-hero-scroll,
+  .home-hero-scroll::after {
+    animation: none;
+  }
+}

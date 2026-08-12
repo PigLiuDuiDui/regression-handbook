@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#050608"/>
+  <g fill="none" stroke="#BFC8D6" stroke-width="2.5" stroke-linecap="round">
+    <!-- 鹿角左支 -->
+    <path d="M30 34 C 28 26, 26 20, 18 14"/>
+    <path d="M26 24 C 22 20, 16 20, 12 17"/>
+    <path d="M29 29 C 24 28, 20 26, 17 24"/>
+    <path d="M24 17 C 22 12, 20 10, 16 8"/>
+    <path d="M27 13 C 28 8, 30 6, 30 4"/>
+    <!-- 鹿角右支 -->
+    <path d="M34 34 C 36 26, 38 20, 46 14"/>
+    <path d="M38 24 C 42 20, 48 20, 52 17"/>
+    <path d="M35 29 C 40 28, 44 26, 47 24"/>
+    <path d="M40 17 C 42 12, 44 10, 48 8"/>
+    <path d="M37 13 C 36 8, 34 6, 34 4"/>
+    <!-- 颅顶 -->
+    <path d="M26 36 C 28 34, 36 34, 38 36"/>
+  </g>
+</svg>
