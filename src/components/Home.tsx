@@ -1,10 +1,11 @@
 /**
- * Home —— 主页（Intro 粒子过渡后进入）
+ * Home —— 首页（月光森林主题）
  *
- * 背景 = 同一个 UniverseScene（银河持续缓慢运动，镜头保持推进感），
- * 内容层通过 Lenis 平滑滚动，Hero 随滚动轻微上浮淡出。
- *
- * 文案保持诗意与克制 —— 不堆砌信息，只留下呼吸感。
+ * Hero 第一眼震撼：月光森林背景（WebGL Forest）+ 品牌主视觉。
+ * 文案参考 README：
+ *   HEESEUNG / 李羲承 / 小鹿园
+ *   "The brightest deer in our forest"
+ *   Explore
  */
 import { useEffect, useRef } from 'react'
 import { SITE } from '../lib/constants'
@@ -12,10 +13,7 @@ import { SITE } from '../lib/constants'
 export function Home() {
   const heroRef = useRef<HTMLElement>(null)
 
-  // Hero 随滚动轻微上浮 + 淡出（rAF 节流）
   useEffect(() => {
-    // 防御：浏览器刷新会恢复滚动位置 → hero 可能已滚出视口 / 透明度归零，
-    // 大字像被"覆盖"。挂载时强制回到顶部（intro 路径与直进主页路径均生效）
     window.scrollTo({ top: 0, behavior: 'instant' })
 
     let raf = 0
@@ -38,44 +36,41 @@ export function Home() {
 
   return (
     <main className="home">
-      {/* ---------------- Hero ---------------- */}
       <section className="home-hero" ref={heroRef}>
         <p className="home-hero-kicker">OFFICIAL FAN SPACE</p>
         <h1 className="home-hero-title">{SITE.titleLatin}</h1>
         <p className="home-hero-han">{SITE.titleHan}</p>
+        <p className="home-hero-sub">{SITE.titleSub}</p>
         <p className="home-hero-tagline">{SITE.tagline}</p>
-        <span className="home-hero-scroll" aria-hidden="true">
-          SCROLL
-        </span>
+        <a className="home-hero-explore" href="#forest" aria-label="探索森林">
+          Explore
+          <span className="home-hero-explore-line" aria-hidden="true" />
+        </a>
       </section>
 
-      {/* ---------------- 章节：星光 ---------------- */}
-      <section className="home-section">
+      {/* 森林章节 */}
+      <section className="home-section" id="forest">
         <p className="home-section-index">01</p>
-        <h2 className="home-section-title">THE STAR</h2>
+        <h2 className="home-section-title">THE FOREST</h2>
         <p className="home-section-body">
           HEESEUNG · 李羲承。ENHYPEN 的队长与主唱，
-          2020 年 11 月 30 日随组合出道。歌声像月光落在湖面，
-          安静，却足以照亮一整片夜空。
+          2020 年 11 月 30 日随组合出道。
+          像月光穿过森林，安静，却足以照亮一整片夜空。
         </p>
       </section>
 
-      {/* ---------------- 章节：宁静 ---------------- */}
       <section className="home-section home-section--quote">
         <p className="home-section-index">02</p>
-        <blockquote className="home-quote">
-          “Every star finds its light.”
-        </blockquote>
+        <blockquote className="home-quote">“The brightest deer in our forest.”</blockquote>
         <p className="home-section-body">
-          这里是小鹿园 —— 为李羲承而生的静谧之地。
-          不喧哗，不拥挤，只有温柔的光。
+          这里是小鹿园 —— 为李羲承而生的静谧森林。
+          不喧哗，不拥挤，只有温柔的月光。
         </p>
       </section>
 
-      {/* ---------------- 章节：光年 ---------------- */}
       <section className="home-section home-section--grid">
         <p className="home-section-index">03</p>
-        <h2 className="home-section-title">LIGHT YEARS</h2>
+        <h2 className="home-section-title">MEMORY</h2>
         <div className="home-grid">
           <div className="home-grid-item">
             <span className="home-grid-num">2020</span>
@@ -83,7 +78,7 @@ export function Home() {
           </div>
           <div className="home-grid-item">
             <span className="home-grid-num">—</span>
-            <span className="home-grid-label">SERENITY</span>
+            <span className="home-grid-label">FOREST</span>
           </div>
           <div className="home-grid-item">
             <span className="home-grid-num">∞</span>
@@ -92,15 +87,10 @@ export function Home() {
         </div>
       </section>
 
-      {/* ---------------- Footer ---------------- */}
       <footer className="home-footer">
         <p className="home-footer-title">{SITE.titleHan}</p>
-        <p className="home-footer-sub">
-          FOR HEESEUNG · {new Date().getFullYear()}
-        </p>
-        <p className="home-footer-note">
-          A quiet place under the stars.
-        </p>
+        <p className="home-footer-sub">FOR HEESEUNG · {new Date().getFullYear()}</p>
+        <p className="home-footer-note">A quiet forest under the moonlight.</p>
       </footer>
     </main>
   )

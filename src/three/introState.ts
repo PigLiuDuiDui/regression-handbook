@@ -31,6 +31,10 @@ export interface IntroAnimState {
   motionBlur: number
   /** 中心镜头眩光强度（0 → 1） */
   flare: number
+  /** 核球 HDR 过曝增强（主页下随相机靠近提升） */
+  bulgeBoost: number
+  /** 流星生成频率系数（0 关 → 1 频繁） */
+  meteorRate: number
 }
 
 /** 全局唯一动画状态实例（单例，供 GSAP 与 WebGL 共享） */
@@ -45,6 +49,8 @@ export const introState: IntroAnimState = {
   cameraY: 0,
   motionBlur: 0,
   flare: 0,
+  bulgeBoost: 0,
+  meteorRate: 0,
 }
 
 /** 鼠标/触摸状态（世界坐标，z=0 平面），由 UniverseScene 维护 */

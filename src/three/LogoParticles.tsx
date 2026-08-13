@@ -161,28 +161,24 @@ function buildLogoParticles(): {
 export function LogoParticles() {
   const { geometry, material } = useMemo(() => {
     const built = buildLogoParticles()
-    // 每帧渲染前同步解体状态 → uniform。
-    // 注意：不用 useFrame+ref（StrictMode 双挂载下 ref 与渲染实例可能错位），
-    // onBeforeRender 挂在 material 上，渲染它时必然执行。
     const mat = built.material
     let lastT = 0
-    mat.onBeforeRender = (_r, _s, _c, _g, _m, group) => {
+    mat.onBeforeRender = (renderer) => {
       const now = performance.now()
       const dt = Math.min((now - lastT) / 1000, 0.1)
       lastT = now
 
       const u = mat.uniforms
+      u.uPixelRatio.value = (renderer as THREE.WebGLRenderer).getPixelRatio()
       u.uTime.value += dt
       u.uBurst.value = introState.dissolve
+      // 用 opacity 直接控制可见性（dissolve=0 时完全透明，无需依赖 group 参数）
       u.uOpacity.value = Math.min(1, introState.dissolve * 4) * (1 - introState.dissolve * 0.35)
-
-      // ENTER 触发解体时自动显现（无需外部控制）
-      if (group) group.visible = introState.dissolve > 0.001
     }
     return built
   }, [])
 
   return (
-    <points geometry={geometry} material={material} visible={false} frustumCulled={false} />
+    <points geometry={geometry} material={material} frustumCulled={false} />
   )
 }

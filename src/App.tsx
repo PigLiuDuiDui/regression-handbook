@@ -1,93 +1,76 @@
 /**
- * App —— 应用根组件
- *
- * 状态机：
- *   phase = 'intro' | 'home'
- *
- * 首次访问（无 localStorage 记录）→ 播放 Intro；
- * 刷新（已有记录）→ 直接进入主页，星空以"银河模式"初始化。
- *
- * 渲染结构（z 从下到上）：
- *   1. UniverseScene（WebGL 星空 —— Intro 与主页共享，实现无缝粒子过渡）
- *   2. Home（主页内容层，Lenis 平滑滚动）
- *   3. Intro（开场 DOM 层，仅首次播放时挂载）
- */
+* App —— 应用根组件
+*
+* 开场动画已移除：始终直接呈现主页，星空以"银河模式"初始化。
+*
+* 渲染结构（z 从下到上）：
+*   1. UniverseScene（WebGL 星空）
+*   2. Nav + Home / 各子页面（主页内容层，Lenis 平滑滚动）
+*/
 import { useCallback, useEffect, useRef, useState } from 'react'
-import gsap from 'gsap'
 import { UniverseScene } from './three/UniverseScene'
-import { Intro } from './components/intro/Intro'
 import { Home } from './components/Home'
+import { About } from './components/About'
+import { PhotoArchive } from './components/PhotoArchive'
+import { VideoCinema } from './components/VideoCinema'
+import { Schedule } from './components/Schedule'
+import { SupportProject } from './components/SupportProject'
+import { Community } from './components/Community'
+import { Nav } from './components/Nav'
 import { StarfieldFallback } from './components/StarfieldFallback'
 import { useDeviceCapability } from './hooks/useDeviceCapability'
 import { useLenis } from './hooks/useLenis'
 import { introState } from './three/introState'
 import { INTRO_CONFIG } from './config/intro.config'
-import { SITE } from './lib/constants'
+import type { PageId } from './lib/nav'
 import type { DeviceCapability } from './lib/quality'
 
-type Phase = 'intro' | 'home'
-
-/** 读取 localStorage（异常时按未播放处理） */
-function hasSeenIntro(): boolean {
+/** 解析 hash 路由（#/photo → photo），无匹配时回退 home */
+function parseHash(): PageId {
   try {
-    return localStorage.getItem(SITE.storageKey) === '1'
+    const h = window.location.hash.replace(/^#\/?/, '')
+    const valid: PageId[] = ['home', 'about', 'photo', 'video', 'schedule', 'support', 'community']
+    return (valid.includes(h as PageId) ? h : 'home') as PageId
   } catch {
-    return false
+    return 'home'
   }
 }
 
-function markIntroSeen() {
-  try {
-    localStorage.setItem(SITE.storageKey, '1')
-  } catch {
-    // 隐私模式等场景下静默失败
-  }
+/** 主页初始态：让星空以“银河模式”开始，避免显示空荡的过渡帧。 */
+function initHomeIntroState() {
+  introState.reveal = 1
+  introState.nebula = 1
+  introState.antlerProgress = 0
+  introState.cameraZ = INTRO_CONFIG.home.cameraZ
+  introState.bulgeBoost = 1
 }
 
 export default function App() {
   const capability = useDeviceCapability()
-  // 用户偏好减少动态效果时直接跳过开场动画
-  const reduceMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const [phase, setPhase] = useState<Phase>(() =>
-    hasSeenIntro() || reduceMotion ? 'home' : 'intro',
-  )
+  // 开场动画已移除：永远以主页态初始化，不再播放 Intro。
+  const [page, setPage] = useState<PageId>(() => parseHash())
 
-  // intro 播放期间锁定滚动；主页可滚动
-  useLenis(phase === 'intro')
+  // 主页可滚动（phase 固定为 home，故 useLenis 总是在启用态）
+  useLenis(false)
 
-  /* ---------------- Intro 完成 → 主页 ---------------- */
-  const handleIntroComplete = useCallback(() => {
-    markIntroSeen()
+  /* ---------------- hash 路由监听 ---------------- */
+  useEffect(() => {
+    const onHash = () => setPage(parseHash())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
 
-    // 星空状态复位到"银河模式"：
-    // 解体粒子平滑归位、相机从穿越深处拉回全景（GSAP 过渡，非瞬移）
-    gsap.to(introState, {
-      dissolve: 0,
-      cameraZ: INTRO_CONFIG.home.cameraZ,
-      cameraY: 0,
-      duration: 1.6,
-      ease: 'power2.inOut',
-      onStart: () => {
-        introState.motionBlur = 0
-      },
-    })
-
-    setPhase('home')
-    // 滚动归零，从 Hero 开始
+  /* ---------------- 页面导航 ---------------- */
+  const navigate = useCallback((id: PageId) => {
+    window.location.hash = `/${id}`
+    setPage(id)
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [])
 
-  /* ---------------- 已看过 Intro 的用户：直接以主页态初始化星空 ---------------- */
+  /* ---------------- 已移除开场动画：直接在挂载时初始化星空为银河模式 ---------------- */
   useEffect(() => {
-    if (phase === 'home') {
-      introState.reveal = 1
-      introState.nebula = 1
-      introState.antlerProgress = 0
-      introState.cameraZ = INTRO_CONFIG.home.cameraZ
-    }
-  }, [phase])
+    initHomeIntroState()
+  }, [])
 
   return (
     <div className="app">
@@ -102,16 +85,35 @@ export default function App() {
       <div className="grain-overlay" aria-hidden="true" />
       <div className="vignette-overlay" aria-hidden="true" />
 
-      {/* 主页内容层（粒子过渡完成后显现） */}
-      {phase === 'home' && <Home />}
-
-      {/* 开场动画层（仅首次访问） */}
-      {phase === 'intro' && <Intro onComplete={handleIntroComplete} />}
+      {/* 主页内容层（开场动画已移除：始终挂载） */}
+      <Nav current={page} onNavigate={navigate} />
+      {renderPage(page)}
 
       {/* 诊断面板：仅 ?diag=1 时显示（平时完全不可见） */}
       <Diag capability={capability} />
     </div>
   )
+}
+
+/** 按当前页面渲染对应内容 */
+function renderPage(page: PageId) {
+  switch (page) {
+    case 'about':
+      return <About />
+    case 'photo':
+      return <PhotoArchive />
+    case 'video':
+      return <VideoCinema />
+    case 'schedule':
+      return <Schedule />
+    case 'support':
+      return <SupportProject />
+    case 'community':
+      return <Community />
+    case 'home':
+    default:
+      return <Home />
+  }
 }
 
 /**

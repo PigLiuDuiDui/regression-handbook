@@ -38,9 +38,9 @@ const PARTICLE_TABLE: Record<QualityTier, number> = {
 }
 
 const DPR_TABLE: Record<QualityTier, number> = {
-  high: 2,
-  medium: 1.5,
-  low: 1.25,
+  high: 1.5,
+  medium: 1.25,
+  low: 1.0,
 }
 
 /** 由硬件指标推断基础档位 */

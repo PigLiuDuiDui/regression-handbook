@@ -1,8 +1,8 @@
 /**
- * StarfieldFallback —— WebGL2 不可用时的 CSS 星空降级
+ * StarfieldFallback —— WebGL2 不可用时的 CSS 萤火虫降级
  *
- * 不依赖任何图形 API：三层 box-shadow 星点（远/中/近），
- * 缓慢漂移 + 闪烁，保持与 WebGL 版本一致的视觉基调（黑底白星）。
+ * 不依赖任何图形 API：三层 box-shadow 萤火虫光点（远/中/近），
+ * 缓慢漂移 + 闪烁，保持与 WebGL 版本一致的视觉基调（森林夜 + 暖金萤火）。
  */
 import { useMemo } from 'react'
 
@@ -12,7 +12,7 @@ function buildStarLayer(count: number, maxSize: number): string {
     const x = (Math.random() * 100).toFixed(2)
     const y = (Math.random() * 100).toFixed(2)
     const size = (Math.random() * (maxSize - 1) + 1).toFixed(1)
-    shadows.push(`${x}vw ${y}vh 0 ${size}px rgba(255,255,255,${(0.3 + Math.random() * 0.5).toFixed(2)})`)
+    shadows.push(`${x}vw ${y}vh 0 ${size}px rgba(216,179,106,${(0.3 + Math.random() * 0.5).toFixed(2)})`)
   }
   return shadows.join(',')
 }

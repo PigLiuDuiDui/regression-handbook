@@ -25,7 +25,7 @@ export const INTRO_CONFIG = {
     /** 唯一点亮的星光亮度 */
     starIntensity: 0.35,
     /** 镜头呼吸幅度（世界单位） */
-    breatheAmplitude: 0.02,
+    breatheAmplitude: 0.05,
     /** 呼吸频率（rad/s） */
     breatheFrequency: 1.6,
   },
@@ -113,26 +113,38 @@ export const INTRO_CONFIG = {
     /** 高质量档位粒子数 */
     countHigh: 22000,
     /** 中质量档位 */
-    countMid: 11000,
+    countMid: 16000,
     /** 低质量档位 */
-    countLow: 5500,
-    /** 粒子基础大小（世界单位） */
-    baseSize: 0.022,
-    /** 银河臂数 */
-    galaxyArms: 3,
-    /** 银河半径 */
-    galaxyRadius: 7.5,
-    /** 银河厚度 */
-    galaxyThickness: 1.05,
-    /** 银河旋转速度（rad/s） */
-    galaxySpin: 0.016,
-    /** 粒子自主漂移幅度 */
-    driftAmplitude: 0.05,
-    /** 星河色板：暖金白（亮星）/ 纯白 / 冷蓝白（暗星），shader 内按种子插值 */
+    countLow: 8000,
+    /** 粒子基础大小（世界单位；大 → 主页星星可见且带内重叠成光） */
+    baseSize: 0.03,
+    /** 银河带：斜向贯穿屏幕的星河（Milky Way band，非螺旋星系） */
+    band: {
+      /** 带方向与水平夹角（rad，≈25°：左下 → 右上） */
+      angle: 0.44,
+      /** 带长（世界单位，两端超出视野 → 横向贯穿屏幕） */
+      length: 19,
+      /** 带中心最大宽度（世界单位，窄带清晰：中心宽、两端收窄） */
+      width: 1.5,
+      /** 带厚度（z 方向，世界单位） */
+      thickness: 0.8,
+      /** 中心线低频弯曲幅度（自然蜿蜒感） */
+      bend: 0.8,
+      /** 带内星团数量（主体粒子聚团 → 银河带由一串星团组成的疏密纹理） */
+      clusters: 14,
+      /** 星团半径（世界单位，簇内高斯散布） */
+      clusterSpread: 0.5,
+    },
+    /** 星河色板（高级电影色调，冬夜银河） */
     palette: {
-      warm: '#FFE8C8',
-      snow: '#FFFFFF',
-      mist: '#B4C6DC',
+      /** 深空背景 */
+      dark: '#03050A',
+      /** 星尘 / 银河主体 */
+      stardust: '#BFC7D8',
+      /** 亮星 */
+      bright: '#FFF4D6',
+      /** 少量暖金点缀 */
+      warm: '#E8C88A',
     },
   },
 
